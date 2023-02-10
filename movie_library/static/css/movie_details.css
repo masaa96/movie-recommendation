@@ -106,6 +106,24 @@
   border-radius: 4px;
 }
 
+.movie__genres {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 10px;
+}
+
+.movie__genre {
+  margin-right: 20px;
+  margin-bottom: 40px;
+  padding: 8px;
+  border-radius: 10%;
+  border: var(--border);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
 .movie__description {
   margin-bottom: 2.5rem;
 }

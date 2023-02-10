@@ -14,7 +14,7 @@ from flask import (
     request,
 )
 from movie_library.forms import LoginForm, RegisterForm, MovieForm, ExtendedMovieForm
-from movie_library.models import User, Movie
+from movie_library.models import User, Movie, Rating
 from passlib.hash import pbkdf2_sha256
 
 
@@ -37,10 +37,7 @@ def login_required(route):
 @pages.route("/")
 @login_required
 def index():
-    user_data = current_app.db.user.find_one({"email": session["email"]})
-    user = User(**user_data)
-
-    movie_data = current_app.db.movie.find({"_id": {"$in": user.movies}})
+    movie_data = current_app.db.movie.find()
     movies = [Movie(**movie) for movie in movie_data]
 
     return render_template(
@@ -108,6 +105,22 @@ def logout():
     return redirect(url_for(".login"))
 
 
+@pages.route("/my-movies")
+@login_required
+def my_movies():
+    user_data = current_app.db.user.find_one({"email": session["email"]})
+    user = User(**user_data)
+
+    movie_data = current_app.db.movie.find({"_id": {"$in": user.movies}})
+    movies = [Movie(**movie) for movie in movie_data]
+
+    return render_template(
+        "my_movies.html",
+        title="Movies Watchlist",
+        movies_data=movies,
+    )
+
+
 @pages.route("/add", methods=["GET", "POST"])
 @login_required
 def add_movie():
@@ -137,7 +150,14 @@ def add_movie():
 @pages.get("/movie/<string:_id>")
 def movie(_id: str):
     movie = Movie(**current_app.db.movie.find_one({"_id": _id}))
-    return render_template("movie_details.html", movie=movie)
+    movie_rating_item = current_app.db.rating.find_one({
+        "$and": [
+            {"user_id": session["user_id"]},
+            {"movie_id": _id}
+        ]
+    })
+    movie_rating = movie_rating_item["rating"] if movie_rating_item else 0
+    return render_template("movie_details.html", movie=movie, movie_rating=movie_rating)
 
 
 @pages.route("/edit/<string:_id>", methods=["GET", "POST"])
@@ -149,11 +169,13 @@ def edit_movie(_id: str):
         movie.title = form.title.data
         movie.director = form.director.data
         movie.year = form.year.data
+        movie.genres = form.genres.data
         movie.cast = form.cast.data
         movie.series = form.series.data
         movie.tags = form.tags.data
         movie.description = form.description.data
         movie.video_link = form.video_link.data
+        movie.cover_photo = form.cover_photo.data
 
         current_app.db.movie.update_one({"_id": movie._id}, {"$set": asdict(movie)})
         return redirect(url_for(".movie", _id=movie._id))
@@ -174,7 +196,25 @@ def watch_today(_id):
 @login_required
 def rate_movie(_id):
     rating = int(request.args.get("rating"))
-    current_app.db.movie.update_one({"_id": _id}, {"$set": {"rating": rating}})
+    user_data = current_app.db.user.find_one({"email": session["email"]})
+    user_id = session["user_id"]
+
+    if _id in user_data["movies"]:
+        current_app.db.rating.update_one(
+            {"user_id": user_id, "movie_id": _id},
+            {"$set": {"rating": rating}}
+        )
+    else:
+        rating = Rating(
+            _id=uuid.uuid4().hex,
+            user_id=user_id,
+            movie_id=_id,
+            rating=rating
+        )
+        current_app.db.rating.insert_one(asdict(rating))
+        current_app.db.user.update_one(
+            {"_id": user_id}, {"$push": {"movies": _id}}
+        )
 
     return redirect(url_for(".movie", _id=_id))
 

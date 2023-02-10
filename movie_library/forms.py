@@ -83,10 +83,12 @@ class StringListField(TextAreaField):
 
 
 class ExtendedMovieForm(MovieForm):
+    genres = StringListField("Genres")
     cast = StringListField("Cast")
     series = StringListField("Series")
     tags = StringListField("Tags")
     description = TextAreaField("Description")
     video_link = URLField("Video link")
+    cover_photo = URLField("Photo link")
 
     submit = SubmitField("Submit")

@@ -24,8 +24,8 @@
                 </a>
             {% else %}
                 <a
-                    href="{{ url_for('pages.index') }}"
-                    class="nav__link {{ 'nav__link--active' if request.path == url_for('pages.index') }}"
+                    href="{{ url_for('pages.my_movies') }}"
+                    class="nav__link {{ 'nav__link--active' if request.path == url_for('pages.my_movies') }}"
                 >
                     <span class="nav__item">My Movies</span>
                 </a>
