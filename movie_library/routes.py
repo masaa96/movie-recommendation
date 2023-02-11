@@ -1,4 +1,5 @@
 import functools
+import math
 import uuid
 import datetime
 from dataclasses import asdict
@@ -13,6 +14,7 @@ from flask import (
     url_for,
     request,
 )
+from flask_paginate import Pagination, get_page_parameter
 from movie_library.forms import LoginForm, RegisterForm, MovieForm, ExtendedMovieForm
 from movie_library.models import User, Movie, Rating
 from passlib.hash import pbkdf2_sha256
@@ -37,13 +39,20 @@ def login_required(route):
 @pages.route("/")
 @login_required
 def index():
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    per_page = 20
     movie_data = current_app.db.movie.find()
     movies = [Movie(**movie) for movie in movie_data]
+    paging_range = math.ceil(len(movies) / per_page)
 
     return render_template(
         "index.html",
         title="Movies Watchlist",
         movies_data=movies,
+        page=page,
+        per_page=per_page,
+        movies_len=len(movies),
+        paging_range=paging_range
     )
 
 
