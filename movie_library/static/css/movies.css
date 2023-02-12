@@ -1,7 +1,9 @@
 .button--add {
-  position: absolute;
+  position: fixed;
   bottom: 4rem;
   right: 2rem;
+  z-index: 9999;
+  transform: translateY(50%);
   display: flex;
   height: 5rem;
   width: 5rem;
@@ -18,6 +20,7 @@
 @media screen and (min-width: 50em) {
   .button--add {
     right: 3rem;
+    transform: translateX(-50%);
   }
 }
 
@@ -71,4 +74,73 @@
   display: block;
   text-align: center;
   font-size: 1.2rem;
+}
+
+.home__movies {
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
+  padding: 0 7rem;
+  position: relative;
+}
+
+.home__pagination-top {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding-left: 40rem;
+  padding-right: 40rem;
+  padding-bottom: 2rem;
+  position: relative;
+}
+
+.home__pagination-bottom {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding-left: 40rem;
+  padding-right: 40rem;
+  padding-top: 2rem;
+  position: relative;
+}
+
+.page__link {
+  font-weight: 600;
+  font-size: 1.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.page__link:hover {
+  transform: scale(1.7);
+  z-index: 1;
+}
+
+.page__link-active {
+  color: var(--accent-colour);
+}
+
+.home__pagination-info {
+  display: flex;
+  justify-content: left;
+  flex-wrap: wrap;
+  padding-left: 10rem;
+}
+
+.movie__list {
+  width: 20%;
+  padding: 15px;
+  text-align: center;
+}
+
+.movie__cover {
+  width: 100%;
+  height: 25rem;
+  object-fit: cover;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.movie__cover:hover {
+  transform: scale(1.1);
+  z-index: 1;
 }

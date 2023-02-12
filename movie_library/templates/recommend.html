@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block head_content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movies.css') }}" />
+{% endblock %}
+
+{% block main_content %}
+    <div class="home__movies">
+    {% for movie in movies_data %}
+        <div class="movie__list">
+            <a href="{{ url_for('pages.movie', _id=movie._id) }}" class="table__link">
+                <img src="{{ movie.cover_photo }}" alt="View {{ movie.title }}" class="movie__cover">
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+
+    <a href="{{ url_for('pages.add_movie') }}" class="button button--add">
+        <span>+</span>
+    </a>
+
+{% endblock %}

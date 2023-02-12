@@ -15,12 +15,14 @@
             {{ render_text_field(form.director) }}
             {{ render_text_field(form.year) }}
 
+            {{ render_area_field(form.genres) }}
             {{ render_area_field(form.cast) }}
             {{ render_area_field(form.series) }}
             {{ render_area_field(form.tags) }}
 
             {{ render_area_field(form.description) }}
             {{ render_text_field(form.video_link) }}
+            {{ render_text_field(form.cover_photo) }}
 
             <div>
                 {{ form.submit(class_="button button--form") }}

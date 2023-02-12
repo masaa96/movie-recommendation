@@ -5,38 +5,29 @@
 {% endblock %}
 
 {% block main_content %}
-
-    {%- if movies_data %}
-        <table class="table">
-            <colgroup>
-                <col style="width: 60%">
-                <col style="width: 25%">
-                <col style="width: 15%">
-            </colgroup>
-            <thead>
-                <tr class="table__header">
-                    <th class="table__cell table__cell--header">Title</th>
-                    <th class="table__cell table__cell--header">Release Date</th>
-                    <th class="table__cell table__cell--header"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for movie in movies_data %}
-                    <tr>
-                        <td class="table__cell">
-                            <p class="table__movieTitle">{{ movie.title }}</p>
-                            <p class="table__movieDirector">By {{ movie.director }}</p>
-                        </td>
-                        <td class="table__cell">{{ movie.year }}</td>
-                        <td class="table__cell"><a href="{{ url_for('pages.movie', _id=movie._id) }}" class="table__link">View</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-    {% else %}
-        <p class="table__empty">You haven't added any movies yet. <a href="{{ url_for('pages.add_movie') }}" class="link">Add one!</a></p>
-    {% endif %}
+    {% set start = (page - 1)*per_page %}
+    {% set end = page*per_page %}
+    <p class="home__pagination-info">{{ start + 1 }} - {{ end }} from {{ movies_len }}</p>
+    <div class="home__pagination-top">
+        {% for i in range(paging_range) %}
+            <a href="{{ url_for('pages.index', page=i+1) }}" class="table__link page__link {{ 'page__link-active' if page == i+1 }}">{{ i + 1 }}</a>
+        {% endfor %}
+    </div>
+    <div class="home__movies">
+    {% for i in range(start, end) if i < movies_len %}
+        {% set movie = movies_data[i] %}
+        <div class="movie__list">
+            <a href="{{ url_for('pages.movie', _id=movie._id) }}" class="table__link">
+                <img src="{{ movie.cover_photo }}" alt="View {{ movie.title }}" class="movie__cover">
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+    <div class="home__pagination-bottom">
+        {% for i in range(paging_range) %}
+            <a href="{{ url_for('pages.index', page=i+1) }}" class="table__link page__link {{ 'page__link-active' if page == i+1 }}">{{ i + 1 }}</a>
+        {% endfor %}
+    </div>
 
     <a href="{{ url_for('pages.add_movie') }}" class="button button--add">
         <span>+</span>
