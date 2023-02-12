@@ -138,8 +138,13 @@ def recommend():
 
     rating_data = current_app.db.rating.find()
     ratings_list = [Rating(**rating) for rating in rating_data]
+    movies_data = []
 
-    movies_data = get_recommendations(ratings_list, user_id)
+    movie_data = get_recommendations(ratings_list, user_id)
+    for item in movie_data:
+        movie_id = item.get("movie_id")
+        movie = Movie(**current_app.db.movie.find_one({"_id": movie_id}))
+        movies_data.append(movie)
 
     return render_template(
         "recommend.html",
