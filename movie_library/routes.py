@@ -19,6 +19,7 @@ from movie_library.forms import LoginForm, RegisterForm, MovieForm, ExtendedMovi
 from movie_library.models import User, Movie, Rating
 from passlib.hash import pbkdf2_sha256
 
+from movie_library.recommend import get_recommendations
 
 pages = Blueprint(
     "pages", __name__, template_folder="templates", static_folder="static"
@@ -127,6 +128,23 @@ def my_movies():
         "my_movies.html",
         title="Movies Watchlist",
         movies_data=movies,
+    )
+
+
+@pages.route("/recommendations")
+@login_required
+def recommend():
+    user_id = session["user_id"]
+
+    rating_data = current_app.db.rating.find()
+    ratings_list = [Rating(**rating) for rating in rating_data]
+
+    movies_data = get_recommendations(ratings_list, user_id)
+
+    return render_template(
+        "recommend.html",
+        title="Recommended Movies",
+        movies_data=movies_data
     )
 
 

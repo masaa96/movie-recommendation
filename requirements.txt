@@ -2,6 +2,9 @@ flask
 python-dotenv
 flask-wtf
 pymongo
+pyspark
+spark
+numpy
 flask-security
 email_validator
 passlib
