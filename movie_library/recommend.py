@@ -4,7 +4,11 @@ from pyspark.ml.feature import StringIndexer
 from pyspark.sql.functions import lit
 
 
-def get_recommendations(ratings_list, user_id):
+def get_recommendations_hieghest_score(ratings_list):
+    return []
+
+
+def get_recommendations_genres(ratings_list, user_id):
     """
     Getting list of ratings from database and current user id.
     Return list of 10 movie ids recommended for this user.

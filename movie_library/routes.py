@@ -14,12 +14,12 @@ from flask import (
     url_for,
     request,
 )
-from flask_paginate import Pagination, get_page_parameter
+from flask_paginate import get_page_parameter
 from movie_library.forms import LoginForm, RegisterForm, MovieForm, ExtendedMovieForm
 from movie_library.models import User, Movie, Rating
 from passlib.hash import pbkdf2_sha256
 
-from movie_library.recommend import get_recommendations
+from movie_library.recommend import get_recommendations_genres, get_recommendations_hieghest_score
 
 pages = Blueprint(
     "pages", __name__, template_folder="templates", static_folder="static"
@@ -135,12 +135,17 @@ def my_movies():
 @login_required
 def recommend():
     user_id = session["user_id"]
-
-    rating_data = current_app.db.rating.find()
-    ratings_list = [Rating(**rating) for rating in rating_data]
     movies_data = []
 
-    movie_data = get_recommendations(ratings_list, user_id)
+    rating_data = current_app.db.rating.find()
+    ratings_user_ids = [rating["user_id"] for rating in rating_data]
+    ratings_list = [Rating(**rating) for rating in rating_data]
+
+    if user_id not in ratings_user_ids:
+        movie_data = get_recommendations_hieghest_score(ratings_list)
+    else:
+        movie_data = get_recommendations_genres(ratings_list, user_id)
+
     for item in movie_data:
         movie_id = item.get("movie_id")
         movie = Movie(**current_app.db.movie.find_one({"_id": movie_id}))
